@@ -1,0 +1,11 @@
+requests==2.32.3
+beautifulsoup4==4.12.3
+lxml==5.3.0
+playwright==1.49.0
+apscheduler==3.10.4
+jinja2==3.1.4
+python-dotenv==1.0.1
+sendgrid==6.11.0
+pydantic==2.10.4
+sqlite-utils==3.38
+rich==13.9.4
