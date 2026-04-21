@@ -1,0 +1,32 @@
+name: Update Ticket Prices
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4 lxml jinja2 python-dotenv sqlite-utils rich
+
+      - name: Run scraper
+        run: python digest_email.py
+
+      - name: Commit and push updated HTML
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git add index.html preview_email.html data/
+          git diff --staged --quiet || git commit -m "Update prices $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push
