@@ -428,31 +428,7 @@ body::before {
   </div>
 </div>
 
-<div class="section alerts">
-  <div class="section-title">&#128276; <span data-en="Price Alerts" data-es="Alertas de Precio">Price Alerts</span></div>
-  <div class="alert-row">
-    <div class="filter-group">
-      <label data-en="Team" data-es="Equipo">Team</label>
-      <select id="alertMatch">''' + team_options + '''</select>
-    </div>
-    <div class="filter-group">
-      <label data-en="Max Price ($)" data-es="Precio max ($)">Max Price ($)</label>
-      <input type="number" id="alertPrice" placeholder="500" style="min-width:100px">
-    </div>
-    <div class="filter-group">
-      <label data-en="Category" data-es="Categoria">Category</label>
-      <select id="alertCat">
-        <option value="">Any</option>
-        <option value="CAT1">CAT1</option>
-        <option value="CAT2">CAT2</option>
-        <option value="CAT3">CAT3</option>
-        <option value="CAT4">CAT4</option>
-      </select>
-    </div>
-    <button class="btn btn-alert" onclick="addAlert()" data-en="+ Add Alert" data-es="+ Agregar Alerta">+ Add Alert</button>
-  </div>
-  <div class="alerts-list" id="alertsList"></div>
-</div>
+
 
 <div class="section wa-section">
   <p data-en="Get instant email alerts when prices drop for your matches — $2.99 for the entire World Cup" data-es="Recibe alertas por email cuando bajen los precios — $2.99 por todo el Mundial">Get instant email alerts when prices drop for your matches — $2.99 for the entire World Cup</p>
