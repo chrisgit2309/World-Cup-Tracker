@@ -455,6 +455,10 @@ body::before {
 </div>
 
 <div class="section wa-section">
+  <p data-en="Get instant email alerts when prices drop for your matches — $2.99 for the entire World Cup" data-es="Recibe alertas por email cuando bajen los precios — $2.99 por todo el Mundial">Get instant email alerts when prices drop for your matches — $2.99 for the entire World Cup</p>
+  <a href="https://ko-fi.com/s/672a1f9296" target="_blank" class="btn" style="background:#E8003D;color:white;text-decoration:none;padding:8px 16px;border-radius:8px;font-weight:700;font-size:13px" data-en="Get Alerts $2.99" data-es="Obtener Alertas $2.99">Get Alerts $2.99</a>
+</div>
+<div class="section wa-section">
   <p data-en="Share today's best deals with your WhatsApp group" data-es="Compartí los mejores deals de hoy con tu grupo de WhatsApp">Share today's best deals with your WhatsApp group</p>
   <button class="btn btn-wa" onclick="shareWhatsApp()" data-en="Share on WhatsApp" data-es="Compartir por WhatsApp">Share on WhatsApp</button>
 </div>
@@ -638,20 +642,15 @@ function renderAlerts() {
 }
 
 function shareWhatsApp() {
-  const top5 = [...DATA].sort((a,b) => a.premium - b.premium).slice(0, 5);
   const nl = String.fromCharCode(10);
-  const h1 = 'Mejores deals de tickets Mundial 2026 hoy:';
-  const h2 = 'Best World Cup 2026 ticket deals today:';
-  const footer1 = 'Compra en el marketplace oficial de FIFA: collect.fifa.com';
-  const footer2 = 'Buy on the official FIFA marketplace: collect.fifa.com';
+  const h1 = 'Mira este tracker GRATUITO de precios de tickets para el Mundial 2026:';
+  const h2 = 'Check out this FREE World Cup 2026 ticket price tracker:';
+  const f1 = 'Filtra por partido, ciudad y categoria. Precios actualizados cada 10 minutos.';
+  const f2 = 'Filter by match, city and category. Prices updated every 10 minutes.';
   const header = currentLang === 'es' ? h1 : h2;
-  const footer = currentLang === 'es' ? footer1 : footer2;
-  let msg = header + nl + nl;
-top5.forEach(l => {
-    msg += l.match + nl;
-    msg += l.category + ' $' + l.starting_at.toLocaleString() + ' | ' + l.city + nl + nl;
-  });
-  msg += footer;
+  const footer = currentLang === 'es' ? f1 : f2;
+  const link = 'https://worldcuptracker2026.netlify.app';
+  const msg = header + nl + nl + link + nl + nl + footer;
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
 }
 
