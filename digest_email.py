@@ -615,7 +615,7 @@ function shareWhatsApp() {
   const f2 = 'Filter by match, city and category. Prices updated every 10 minutes.';
   const header = currentLang === 'es' ? h1 : h2;
   const footer = currentLang === 'es' ? f1 : f2;
-  const link = 'https://worldcuptracker2026.netlify.app';
+  const link = 'https://chrisgit2309.github.io/World-Cup-Tracker';
   const msg = header + nl + nl + link + nl + nl + footer;
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
 }
