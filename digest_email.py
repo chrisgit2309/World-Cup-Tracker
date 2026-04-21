@@ -605,16 +605,7 @@ function addAlert() {
 
 function removeAlert(i) {
   alerts.splice(i, 1);
-  renderAlerts();
   renderTable();
-}
-
-function renderAlerts() {
-  document.getElementById('alertsList').innerHTML = alerts.map((a,i) =>
-    '<div class="alert-tag">' + a.team + (a.cat ? ' ' + a.cat : '') + ' under $' + a.price +
-    ' <span class="remove" onclick="removeAlert(' + i + ')">x</span></div>'
-  ).join('');
-  document.getElementById('statAlerts').textContent = alerts.length;
 }
 
 function shareWhatsApp() {
