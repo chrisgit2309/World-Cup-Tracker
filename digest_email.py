@@ -599,7 +599,6 @@ function addAlert() {
   const cat = document.getElementById('alertCat').value;
   if (!team || !price) { alert('Select a team and enter a max price'); return; }
   alerts.push({ team, price, cat });
-  renderAlerts();
   renderTable();
 }
 
@@ -630,7 +629,6 @@ function resetFilters(render=true) {
   if (render) sortTable('starting_at', true);
 }
 
-renderAlerts();
 applyFilters();
 </script>
 </body>
