@@ -1,5 +1,7 @@
 .env
-data/
+git add .
+git commit -m "Remove data from gitignore"
+git push
 __pycache__/
 *.pyc
 *.pyo
