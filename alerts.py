@@ -93,22 +93,27 @@ def run_alerts():
     except Exception as e:
         print('Error scraping:', e)
         return
+
     for sub in subscribers:
-        email = sub.get('Email address', '')
-        teams = sub.get('Which matches do you want to track?', '')
-        max_price = sub.get('Maximum price per ticket ($)', 0)
-        category = sub.get('Ticket category', 'Any category')
+        email = sub.get('Email Address', '')
+        teams = sub.get('Which matches do you want to track?  ', '')
+        max_price = sub.get('Maximum price per ticket ($)  ', 0)
+        category = sub.get('Ticket category  ', 'Any category')
         if not email or not max_price:
             continue
         try:
             max_price = float(str(max_price).replace('$','').replace(',',''))
         except:
             continue
+
+        matches_alerted = set()
         for listing in listings:
             team_match = any(team.strip().lower() in listing['match'].lower() for team in teams.split(','))
-            cat_match = category == 'Any category' or listing['category'] == category
+            cat_match = 'Any category' in category or listing['category'].replace(' ','') in category.replace(' ','')
             price_match = listing['starting_at'] <= max_price
-            if team_match and cat_match and price_match:
+
+            if team_match and cat_match and price_match and listing['match'] not in matches_alerted:
+                matches_alerted.add(listing['match'])
                 try:
                     send_alert_email(email, listing['match'], listing['category'], listing['starting_at'], max_price)
                 except Exception as e:
