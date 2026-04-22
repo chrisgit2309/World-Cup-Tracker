@@ -466,7 +466,7 @@ body::before {
 </div>
 
 <div class="table-wrap">
-  <table id="ticketTable">
+  <div class="table-container"><table id="ticketTable">
     <thead>
       <tr>
         <th onclick="sortTable('match')" data-en="Match" data-es="Partido">Match</th>
@@ -480,7 +480,7 @@ body::before {
       </tr>
     </thead>
     <tbody id="tableBody"></tbody>
-  </table>
+  </table></div>
   <div id="noResults" class="no-results" style="display:none" data-en="No listings found." data-es="Sin resultados.">No listings found.</div>
 </div>
 
