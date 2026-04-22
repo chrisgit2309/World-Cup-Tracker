@@ -300,6 +300,24 @@ select:focus, input:focus { outline: none; border-color: #E8003D; }
 /* TABLE */
 .table-wrap { background: #161616; border: 1px solid #2a2a2a; border-radius: 12px; overflow: hidden; margin-top: 14px; }
 table { width: 100%; border-collapse: collapse; }
+@media (max-width: 768px) {
+  table, thead, tbody, th, td, tr { display: block; }
+  thead tr { display: none; }
+  td { padding: 8px 12px; border-bottom: none; position: relative; padding-left: 40%; }
+  td:before { position: absolute; left: 12px; width: 35%; white-space: nowrap; font-weight: 700; color: #9ACD32; font-size: 11px; text-transform: uppercase; }
+  td:nth-of-type(1):before { content: "Match"; }
+  td:nth-of-type(2):before { content: "Location"; }
+  td:nth-of-type(3):before { content: "Cat"; }
+  td:nth-of-type(4):before { content: "Face Value"; }
+  td:nth-of-type(5):before { content: "Price"; }
+  td:nth-of-type(6):before { content: "Premium"; }
+  td:nth-of-type(7):before { content: "Trend"; }
+  td:nth-of-type(8):before { content: "Buy"; }
+  tr { background: #161616; border: 1px solid #2a2a2a; border-radius: 8px; margin-bottom: 12px; }
+  .filters { flex-direction: column; }
+  select, input[type=number] { min-width: 100%; width: 100%; }
+  .stat-card { min-width: 45%; }
+}
 thead tr { background: linear-gradient(135deg, #E8003D, #7B2FBE); }
 th { padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 700; cursor: pointer; user-select: none; white-space: nowrap; letter-spacing: 0.5px; text-transform: uppercase; color: rgba(255,255,255,0.9); }
 th:hover { background: rgba(255,255,255,0.1); }
