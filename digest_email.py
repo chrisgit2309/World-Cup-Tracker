@@ -664,5 +664,7 @@ if __name__ == '__main__':
     html = build_interactive_html(listings, scraped_at)
     with open('preview_email.html', 'w', encoding='utf-8') as f:
         f.write(html)
+    with open('index.html', 'w', encoding='utf-8') as f:
+        f.write(html)
     print('Listo. Abri preview_email.html en Chrome')
     # send_email(html)
