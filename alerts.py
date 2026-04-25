@@ -8,9 +8,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime
 
-GMAIL_USER = 'trackerworldcup@gmail.com'
-GMAIL_PASSWORD = 'cgjx hixi cnzn rdlo'
-SHEET_URL = 'https://docs.google.com/spreadsheets/d/1avbZ1dWaATRtMib_k6jYj92hubGt4N-KRAMAhMadP04/edit'
+GMAIL_USER = 'chrisaraujoo23@gmail.com'
+GMAIL_PASSWORD = 'yluz ugvg wrtj nuet'
+SHEET_URL = 'https://docs.google.com/spreadsheets/d/1UjbtFLhAjoOxMo-94JJncKWRuFt4alpC_qcCrgGJ_aw/edit'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 def get_subscribers():

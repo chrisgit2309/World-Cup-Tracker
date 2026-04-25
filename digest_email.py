@@ -13,8 +13,8 @@ import sys
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
 URL = 'https://www.fifacollect.info/tickets/world-cup-2026/listings'
 
-GMAIL_USER = 'tu_email@gmail.com'
-GMAIL_PASSWORD = 'tu_app_password'
+GMAIL_USER = 'chrisaraujoo23@gmail.com'
+GMAIL_PASSWORD = 'yluz ugvg wrtj nuet'
 SUBSCRIBERS = ['suscriptor1@email.com']
 
 DB_PATH = 'data/prices.db'
