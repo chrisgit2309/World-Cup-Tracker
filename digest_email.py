@@ -93,7 +93,7 @@ def extract_teams(match_name):
     return []
 
 def scrape():
-    # Paso 1: Obtener precios reales de la API de FIFA Collect
+    # Paso 1: Todos los precios de la API
     api_prices = {}
     page = 1
     while True:
@@ -114,7 +114,7 @@ def scrape():
             break
         page += 1
 
-    # Paso 2: Obtener metadata de fifacollect.info
+    # Paso 2: Metadata de fifacollect.info
     r = requests.get(URL, headers=HEADERS, timeout=30)
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.content, 'lxml')
@@ -122,6 +122,7 @@ def scrape():
     rows = table.find_all('tr')[1:]
     results = []
     scraped_at = datetime.utcnow().strftime('%B %d, %Y at %H:%M UTC')
+    seen = set()
     for row in rows:
         cols = [td.get_text(strip=True) for td in row.find_all('td')]
         tds = row.find_all('td')
@@ -131,37 +132,34 @@ def scrape():
             fv = parse_price(cols[4])
             if not fv:
                 continue
-            # Obtener uniqueCode del link
+            buy_link = 'https://collect.fifa.com'
             unique_code = None
             for td in tds:
                 for a in td.find_all('a', href=True):
                     href = a.get('href', '')
                     if 'collect.fifa.com' in href:
                         buy_link = href
-                        # Extraer tag del link
+                        # Tomar uniqueCode directamente del tag en el href
                         tag_match = re.search(r'tags=([\w-]+)', href)
                         if tag_match:
                             tag = tag_match.group(1)
-                            # Convertir rtt-m65 -> cat1-m65, cat2-m65
-                            cat = cols[3].lower().replace(' ', '')
-                            m = re.search(r'm(\d+)', tag)
-                            if m:
-                                unique_code = f"{cat}-m{m.group(1)}"
+                            # Si el tag es rtt-mXX, buscar cat1-mXX en api_prices
+                            if tag.startswith('rtt-'):
+                                m = re.search(r'm(\d+)', tag)
+                                if m:
+                                    num = m.group(1)
+                                    cat = cols[3].lower().replace(' ', '')
+                                    unique_code = f'{cat}-m{num}'
+                            else:
+                                unique_code = tag
                         break
-            # Usar precio real de API si está disponible
-            sa = api_prices.get(unique_code) if unique_code else None
-            if not sa:
-                sa = parse_price(cols[7])
+            if not unique_code or unique_code in seen:
+                continue
+            seen.add(unique_code)
+            sa = api_prices.get(unique_code)
             if not sa:
                 continue
             pct = round(((sa - fv) / fv) * 100)
-            buy_link = 'https://collect.fifa.com'
-            for td in tds:
-                for a in td.find_all('a', href=True):
-                    href = a.get('href', '')
-                    if 'collect.fifa.com' in href:
-                        buy_link = href
-                        break
             trend, diff = get_trend(match_name, cols[3], sa)
             results.append({
                 'match': match_name,
