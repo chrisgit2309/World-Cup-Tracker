@@ -93,6 +93,28 @@ def extract_teams(match_name):
     return []
 
 def scrape():
+    # Paso 1: Obtener precios reales de la API de FIFA Collect
+    api_prices = {}
+    page = 1
+    while True:
+        url = f'https://api.prod.rock-palisade-352518.com/marketplace/v2/listings/search?generalClubs=All&language=en-UK&listingStatus=active&page={page}&pageSize=100&priceHigh=10000000&priceLow=0&sortBy=latestCreatedAt&sortDirection=desc'
+        r = requests.get(url, headers=HEADERS, timeout=30)
+        if r.status_code != 200:
+            break
+        data = r.json()
+        listings = data.get('listings', [])
+        if not listings:
+            break
+        for l in listings:
+            code = l.get('uniqueCode', '')
+            price = l.get('lowestPrice')
+            if code and price:
+                api_prices[code] = price / 100
+        if len(listings) < 100:
+            break
+        page += 1
+
+    # Paso 2: Obtener metadata de fifacollect.info
     r = requests.get(URL, headers=HEADERS, timeout=30)
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.content, 'lxml')
@@ -107,14 +129,36 @@ def scrape():
             match_name, match_date = clean_match(cols[0])
             city, stadium = clean_location(cols[1])
             fv = parse_price(cols[4])
-            sa = parse_price(cols[7])
-            if not fv or not sa:
+            if not fv:
+                continue
+            # Obtener uniqueCode del link
+            unique_code = None
+            for td in tds:
+                for a in td.find_all('a', href=True):
+                    href = a.get('href', '')
+                    if 'collect.fifa.com' in href:
+                        buy_link = href
+                        # Extraer tag del link
+                        tag_match = re.search(r'tags=([\w-]+)', href)
+                        if tag_match:
+                            tag = tag_match.group(1)
+                            # Convertir rtt-m65 -> cat1-m65, cat2-m65
+                            cat = cols[3].lower().replace(' ', '')
+                            m = re.search(r'm(\d+)', tag)
+                            if m:
+                                unique_code = f"{cat}-m{m.group(1)}"
+                        break
+            # Usar precio real de API si está disponible
+            sa = api_prices.get(unique_code) if unique_code else None
+            if not sa:
+                sa = parse_price(cols[7])
+            if not sa:
                 continue
             pct = round(((sa - fv) / fv) * 100)
             buy_link = 'https://collect.fifa.com'
             for td in tds:
                 for a in td.find_all('a', href=True):
-                    href = a.get('href','')
+                    href = a.get('href', '')
                     if 'collect.fifa.com' in href:
                         buy_link = href
                         break
