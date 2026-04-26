@@ -19,39 +19,69 @@ def get_subscribers():
     sheet = client.open_by_url(SHEET_URL).sheet1
     return sheet.get_all_records()
 
-def parse_price(text):
-    match = re.search(r'\$[\d,]+\.?\d*', text)
-    if not match:
-        return None
-    return float(match.group(0).replace('$','').replace(',',''))
-
-def fix_encoding(text):
-    try:
-        return text.encode('latin-1').decode('utf-8')
-    except:
-        return text
-
 def scrape_listings():
-    URL = 'https://www.fifacollect.info/tickets/world-cup-2026/listings'
+    api_prices = {}
+    page = 1
     HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    while True:
+        url = f'https://api.prod.rock-palisade-352518.com/marketplace/v2/listings/search?generalClubs=All&language=en-UK&listingStatus=active&page={page}&pageSize=100&priceHigh=10000000&priceLow=0&sortBy=latestCreatedAt&sortDirection=desc'
+        r = requests.get(url, headers=HEADERS, timeout=30)
+        if r.status_code != 200:
+            break
+        data = r.json()
+        listings = data.get('listings', [])
+        if not listings:
+            break
+        for l in listings:
+            code = l.get('uniqueCode', '')
+            price = l.get('lowestPrice')
+            if code and price:
+                api_prices[code] = price / 100
+        if len(listings) < 100:
+            break
+        page += 1
+
+    URL = 'https://www.fifacollect.info/tickets/world-cup-2026/listings'
     r = requests.get(URL, headers=HEADERS, timeout=30)
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.content, 'lxml')
     table = soup.find('table')
     rows = table.find_all('tr')[1:]
     results = []
+    seen = set()
     for row in rows:
         cols = [td.get_text(strip=True) for td in row.find_all('td')]
+        tds = row.find_all('td')
         if len(cols) >= 8:
-            match_name = fix_encoding(cols[0])
+            match_name = cols[0]
             match_name = re.sub(r'^M\d+', '', match_name).strip()
             m = re.search(r'(.+?)(January|February|March|April|May|June|July)(\s+\d+,\s+\d{4})', match_name)
             if m:
                 match_name = m.group(1).strip()
-            sa = parse_price(cols[7])
-            cat = cols[3]
-            if sa:
-                results.append({'match': match_name, 'category': cat, 'starting_at': sa})
+            cat = cols[3].lower().replace(' ', '')
+            buy_link = 'https://collect.fifa.com'
+            unique_code = None
+            for td in tds:
+                for a in td.find_all('a', href=True):
+                    href = a.get('href', '')
+                    if 'collect.fifa.com' in href:
+                        tag_match = re.search(r'tags=([\w-]+)', href)
+                        if tag_match:
+                            tag = tag_match.group(1)
+                            if tag.startswith('rtt-'):
+                                mn = re.search(r'm(\d+)', tag)
+                                if mn:
+                                    unique_code = f'{cat}-m{mn.group(1)}'
+                            else:
+                                unique_code = tag
+                        break
+            if not unique_code or unique_code in seen:
+                continue
+            seen.add(unique_code)
+            sa = api_prices.get(unique_code)
+            if not sa:
+                continue
+            results.append({'match': match_name, 'category': cols[3], 'starting_at': sa})
     return results
 
 def send_alert_email(to_email, match, category, price, max_price):
@@ -96,9 +126,9 @@ def run_alerts():
 
     for sub in subscribers:
         email = sub.get('Email Address', '')
-        teams = sub.get('Which matches do you want to track?  ', '')
-        max_price = sub.get('Maximum price per ticket ($)  ', 0)
-        category = sub.get('Ticket category  ', 'Any category')
+        teams = sub.get('Which matches do you want to track?', '')
+        max_price = sub.get('Maximum price per ticket ($)', 0)
+        category = sub.get('Ticket Category', 'Any category')
         if not email or not max_price:
             continue
         try:
@@ -109,7 +139,7 @@ def run_alerts():
         matches_alerted = set()
         for listing in listings:
             team_match = any(team.strip().lower() in listing['match'].lower() for team in teams.split(','))
-            cat_match = 'Any category' in category or listing['category'].replace(' ','') in category.replace(' ','')
+            cat_match = category == 'Any category' or listing['category'].replace(' ','') in category.replace(' ','')
             price_match = listing['starting_at'] <= max_price
 
             if team_match and cat_match and price_match and listing['match'] not in matches_alerted:
