@@ -138,7 +138,7 @@ def run_alerts():
 
         matches_alerted = set()
         for listing in listings:
-            team_match = any(team.strip().lower() in listing['match'].lower() for team in teams.split(','))
+            team_match = any(team.strip().lower() in listing['match'].lower() for team in re.split(r'[,;]', teams))
             cat_match = category == 'Any category' or listing['category'].replace(' ','') in category.replace(' ','')
             price_match = listing['starting_at'] <= max_price
 
