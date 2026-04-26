@@ -127,7 +127,7 @@ def run_alerts():
     for sub in subscribers:
         email = sub.get('Email Address', '')
         teams = sub.get('Which matches do you want to track?', '')
-        max_price = sub.get('Maximum price per ticket ($)', 0)
+        max_price = next((v for k, v in sub.items() if 'Maximum price' in k), 0)
         category = sub.get('Ticket Category', 'Any category')
         if not email or not max_price:
             continue
